@@ -1,8 +1,8 @@
 <template>
   <v-app style="max-width:425px; margin:auto">
-      <v-container>
-        <div>
-            <h2 style="text-align:center">{{roomID}}</h2>
+      <v-container> 
+        <div v-if="isHidden">
+            <h2 style="text-align:center"  >{{roomID}}</h2>
             <div class="exit" @click="exit">Exit</div>
         </div>
         <div class="chat-history">
@@ -24,13 +24,15 @@
             rows="1"
             row-height="15"
             v-model="message"
+           
             class="input-message"
         >
-            <template v-slot:append>
+            <template v-slot:append >
                 <v-btn
                 color="#5DB075"
                 fab
                 @click="submitChat"
+                
                 >
                 <v-icon>mdi-arrow-up</v-icon>
                 </v-btn>
@@ -45,7 +47,8 @@ export default {
     data(){
         return {
             messages:[],
-            message:""
+            message:"",
+            isHidden:true
         }
     },
     sockets:{
@@ -57,6 +60,12 @@ export default {
             if (message == 'disconnected'){
                  this.$router.push('/')
             }
+        },
+        connect() {
+            console.log('socket connected')
+        },
+        getChats(message){
+            this.messages = message
         }
     },
     computed:{
@@ -77,6 +86,10 @@ export default {
             return data
         },
         submitChat(){
+            if (this.message.length == 0){
+                return false;
+            }
+            
             var data = {
                 message:this.message,
                 user:this.$store.state.store.name,
@@ -94,11 +107,20 @@ export default {
             this.$socket.emit('leaveRoom', data)
         }
     },
-    mounted(){
+    async mounted(){
+
+        if (localStorage.getItem("data")){
+            var data =JSON.parse(localStorage.getItem("data"));
+            console.log(data)
+            await this.$store.commit('assignData', data)
+            await this.$socket.emit('getChats', data)
+
+        }
+
         const currentUsername = this.$store.state.store.name;
         const roomID = this.$store.state.store.RoomID;
         if (roomID == "" & currentUsername == "") {
-            this.$router.push('/')
+           // this.$router.push('/')
         }
     }
 }

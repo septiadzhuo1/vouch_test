@@ -1,8 +1,7 @@
 <template>
    <v-app style="max-width:425px; margin:auto; text-align:center">
     <v-container>
-      <h1>Join Chatroom</h1>
-      <v-form @submit="join">
+      <h1 class="join-room">Join Chatroom</h1>
         <v-text-field
           label="Username"
           solo
@@ -24,11 +23,11 @@
         <v-btn
           color="#5DB075"
           rounded
-          type="submit"
+          @click="join"
+          class="join-button"
         >
           JOIN
       </v-btn>
-      </v-form>
     </v-container>
   </v-app>
 </template>
@@ -42,12 +41,15 @@ export default {
     }
   },
   methods:{
-    async join(e){
+    async join(){
       var data = {
         name:this.name,
         roomID:this.roomID,
       }
-       e.preventDefault();
+      localStorage.setItem("data", JSON.stringify(data))
+      if (this.name.length == 0 && this.roomID.length ==0){
+        return false
+      } 
       await this.$store.commit('assignData', data)
       await this.$socket.emit('joinRoom', data)
       //this.$router.push('chatroom')
@@ -59,15 +61,21 @@ export default {
     },
     joinRoom(message){
       if (message != "Not Allowed"){
+
         this.$router.push('chatroom')
       } else {
         alert('this username is exist in the chatroom')
       }
-    }
+    },
   }
 }
 </script>
 
 <style>
-
+.join-room{
+  margin-bottom:45px;
+}
+.join-button{
+  margin-top:120px
+}
 </style>

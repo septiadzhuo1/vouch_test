@@ -12,7 +12,7 @@ import SocketIO from 'socket.io-client'
 let url ='';
 
 if (window.location.host.includes("localhost")){
-  url = 'http://localhost:4001'
+  url = 'http://localhost:8880'
 } else {
   url = 'http://35.219.116.151:8880';
 }
