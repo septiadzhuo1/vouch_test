@@ -50,12 +50,19 @@ export default {
        e.preventDefault();
       await this.$store.commit('assignData', data)
       await this.$socket.emit('joinRoom', data)
-      this.$router.push('chatroom')
+      //this.$router.push('chatroom')
     }
   },
   sockets: {
     connect: function () {
        console.log('socket connected')
+    },
+    joinRoom(message){
+      if (message != "Not Allowed"){
+        this.$router.push('chatroom')
+      } else {
+        alert('this username is exist in the chatroom')
+      }
     }
   }
 }

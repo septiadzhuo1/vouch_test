@@ -1,8 +1,10 @@
 <template>
   <v-app style="max-width:425px; margin:auto">
       <v-container>
-        <h2 style="text-align:center">{{roomID}}</h2>
-        <div>exit</div>
+        <div>
+            <h2 style="text-align:center">{{roomID}}</h2>
+            <div class="exit" @click="exit">Exit</div>
+        </div>
         <div class="chat-history">
             <div class="chats" v-for="(message) of messages" v-bind:key="message.message">
                 <div class="foreign-user" v-if="user != message.user" >
@@ -12,7 +14,6 @@
                     {{message.message}}
                 </div>
             </div>
-            
         </div>
         <v-textarea 
             placeholder="Message here..."
@@ -48,13 +49,14 @@ export default {
         }
     },
     sockets:{
-        joinRoom(message){
-            console.log(message)
-        },
         message(message){
-            console.log(message)
             this.messages.push(message);
             console.log(this.messages)
+        },
+        leaveRoom(message){
+            if (message == 'disconnected'){
+                 this.$router.push('/')
+            }
         }
     },
     computed:{
@@ -66,6 +68,14 @@ export default {
         }
     },
     methods: {
+        getData(){
+            var data = {
+                message:this.message,
+                user:this.$store.state.store.name,
+                roomID:this.$store.state.store.RoomID,
+            }
+            return data
+        },
         submitChat(){
             var data = {
                 message:this.message,
@@ -74,6 +84,14 @@ export default {
             }
             this.message = "";
             this.$socket.emit('message', data)
+        },
+        exit(){
+            var data = {
+                user:this.$store.state.store.name,
+                roomID:this.$store.state.store.RoomID,
+            }
+            this.message = "";
+            this.$socket.emit('leaveRoom', data)
         }
     },
     mounted(){
@@ -152,5 +170,12 @@ export default {
     }
     .chats {
         margin-top: 30px;
+    }
+    .exit{
+        font-size:16px;
+        color:#5DB075;
+    }
+    .exit:hover{
+        cursor: pointer;
     }
 </style>

@@ -9,9 +9,15 @@ import Vuelidate from 'vuelidate'
 import '@mdi/font/css/materialdesignicons.css'
 import SocketIO from 'socket.io-client'
 
-const backendRoute = window.location.protocol + "//" + window.location.host;
+let url ='';
 
-const socketConnection = SocketIO('http://septiadi.microsanz.com/api');
+if (window.location.host.includes("localhost")){
+  url = 'http://localhost:4001'
+} else {
+  url = 'http://35.219.116.151:4001';
+}
+
+const socketConnection = SocketIO(url);
 Vue.config.productionTip = false
 Vue.use(Vuetify)
 Vue.use(Vuelidate)
@@ -19,7 +25,6 @@ Vue.use(new VueSocketIO({
   debug:true,
   connection:socketConnection
 }))
-console.log(backendRoute)
 new Vue({
   render: h => h(App),
   vuetify: new Vuetify({
