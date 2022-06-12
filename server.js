@@ -17,8 +17,11 @@ mongo.connect(url, (err, db) => {
     client.on('connection', (socket)=> {
         var participants = dbo.collection("participants");
         // Handle input events
-
+        
         socket.on('joinRoom', (data) => {
+            socket.join(data.roomID)
+
+            /*
             participants.findOne({name:data.name, roomID:data.roomID}, (err, result)=> {
                 if (err) throw err
                 
@@ -31,19 +34,17 @@ mongo.connect(url, (err, db) => {
                     participants.insertOne(data, (err, result)=> {
                         if (err) throw err;
                         console.log("1 data inserted");
-                        db.close();
                     })
                 } else {
                     console.log('this useer is in the chatroom')
                 }
-            })
-
+            })*/
+            console.log(data.roomID)
             client.to(data.roomID).emit('joinRoom', data.roomID);
 
         })
         socket.on('message', (data) => {
             client.to(data.roomID).emit('message', data)
-            console.log(client.sockets.adapter.rooms.get(data.roomID))
         })
     });
 })
