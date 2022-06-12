@@ -14,7 +14,7 @@ let url ='';
 if (window.location.host.includes("localhost")){
   url = 'http://localhost:4001'
 } else {
-  url = 'http://35.219.116.151:4001';
+  url = 'http://35.219.116.151:8880';
 }
 
 const socketConnection = SocketIO(url);
