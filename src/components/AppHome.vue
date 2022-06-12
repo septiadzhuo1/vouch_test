@@ -1,5 +1,5 @@
 <template>
-   <v-app style="max-width:425px; margin:auto">
+   <v-app style="max-width:425px; margin:auto; text-align:center">
     <v-container>
       <h1>Join Chatroom</h1>
       <v-form @submit="join">
@@ -57,7 +57,7 @@ export default {
     connect: function () {
        console.log('socket connected')
     }
-  },
+  }
 }
 </script>
 

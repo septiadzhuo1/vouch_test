@@ -1,6 +1,6 @@
 const state={
-    name:{},
-    RoomID:{}
+    name:"",
+    RoomID:""
 
 };
 const getters={};

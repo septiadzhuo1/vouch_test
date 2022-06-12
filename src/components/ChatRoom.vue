@@ -1,37 +1,18 @@
 <template>
-  <v-app style="max-width:425px;">
+  <v-app style="max-width:425px; margin:auto">
       <v-container>
         <h2 style="text-align:center">{{roomID}}</h2>
         <div>exit</div>
         <div class="chat-history">
-            <div class="chat-messages">
-                1sadasasdsadsadasdasd
+            <div class="chats" v-for="(message) of messages" v-bind:key="message.message">
+                <div class="foreign-user" v-if="user != message.user" >
+                    {{message.user}}
+                </div>
+                <div class="chat-messages" :class="{'from-me':message.user == user}">
+                    {{message.message}}
+                </div>
             </div>
-            <div class="chat-messages">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fringilla quam eu faci lisis mollis. 
-            </div>
-            <div class="chat-messages from-me">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fringi
-                lla quam eu faci lisis mollis.
-                asdasdasdasdasd
-                asdasdasdasdsad
-                asdasdad 
-            </div>
-             <div class="chat-messages">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fringi
-                lla quam eu faci lisis mollis.
-                asdasdasdasdasd
-                asdasdasdasdsad
-                asdasdad 
-            </div>
-            <div class="chat-messages from-me">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec fringi
-                asdasdasdasdasd
-                asdasdad 
-            </div>
-            <div class="chat-messages from-me">
-                1sadas
-            </div>
+            
         </div>
         <v-textarea 
             placeholder="Message here..."
@@ -41,12 +22,14 @@
             dense
             rows="1"
             row-height="15"
+            v-model="message"
             class="input-message"
         >
             <template v-slot:append>
                 <v-btn
                 color="#5DB075"
                 fab
+                @click="submitChat"
                 >
                 <v-icon>mdi-arrow-up</v-icon>
                 </v-btn>
@@ -61,18 +44,43 @@ export default {
     data(){
         return {
             messages:[],
+            message:""
         }
     },
     sockets:{
         joinRoom(message){
             console.log(message)
-            this.messages.push(message)
+        },
+        message(message){
+            console.log(message)
+            this.messages.push(message);
+            console.log(this.messages)
         }
     },
     computed:{
         roomID(){
-            console.log(this.$store.state.store)
-            return this.$store.state.store.RoomID
+            return this.$store.state.store.RoomID;
+        },
+        user(){
+            return this.$store.state.store.name;
+        }
+    },
+    methods: {
+        submitChat(){
+            var data = {
+                message:this.message,
+                user:this.$store.state.store.name,
+                roomID:this.$store.state.store.RoomID,
+            }
+            this.message = "";
+            this.$socket.emit('message', data)
+        }
+    },
+    mounted(){
+        const currentUsername = this.$store.state.store.name;
+        const roomID = this.$store.state.store.RoomID;
+        if (roomID == "" & currentUsername == "") {
+            this.$router.push('/')
         }
     }
 }
@@ -85,7 +93,6 @@ export default {
         border-radius: 10px 10px 10px 0px;
         position: relative;
         max-width:250px;
-        margin-top: 30px;
         margin-left: 10px;
     }
     .chat-history{
@@ -129,7 +136,7 @@ export default {
     .input-message{
         position: fixed !important;
         bottom: 5px;
-        width:94%;
+        width:390px;
     }
     .v-input__slot {
         background: #F6F6F6 !important;
@@ -139,5 +146,11 @@ export default {
     }
     .v-text-field--rounded>.v-input__control>.v-input__slot{
         padding: 0 10px 0px 20px !important;
+    }
+    .foreign-user {
+        margin-left: 15px;
+    }
+    .chats {
+        margin-top: 30px;
     }
 </style>
