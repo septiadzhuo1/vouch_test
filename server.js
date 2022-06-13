@@ -2,7 +2,7 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://septiadi:septiadi11@cluster0.84nyz.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-const clientIO =require('socket.io')(8880, {
+const clientIO =require('socket.io')(process.env.PORT || 8880, {
     cors: {
       origin: "*",
     }
