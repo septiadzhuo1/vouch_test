@@ -1,24 +1,7 @@
-# chatroom-fe
+npm install to run the dependecy
 
-## Project setup
-```
-npm install
-```
+to run local need to run 2 command with 2 different command line
 
-### Compiles and hot-reloads for development
-```
 npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+nodemon server.js
