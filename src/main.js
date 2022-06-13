@@ -14,7 +14,7 @@ let url ='';
 if (window.location.host.includes("localhost")){
   url = 'http://localhost:8880'
 } else {
-  url = 'http://35.219.116.151:8880';
+  url = 'https://vouch-chatroom-be.herokuapp.com';
 }
 
 const socketConnection = SocketIO(url);
