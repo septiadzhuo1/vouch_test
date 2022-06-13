@@ -60,7 +60,6 @@ export default {
            window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight); 
         },
         leaveRoom(message){
-            console.log(message)
             if (message.status == 'disconnected'){
                 console.log(this.$store.state.store.RoomID, message.roomID)
                 console.log(this.$store.state.store.RoomID, message.roomID)
@@ -89,22 +88,6 @@ export default {
         }
     },
     methods: {
-        scrollToElement() {
-            const el = this.$refs.scrollToMe;
-
-            if (el) {
-            // Use el.scrollIntoView() to instantly scroll to the element
-            el.scrollIntoView({behavior: 'smooth'});
-            }
-        },
-        getData(){
-            var data = {
-                message:this.message,
-                name:this.$store.state.store.name,
-                roomID:this.$store.state.store.RoomID,
-            }
-            return data
-        },
         submitChat(){
             if (this.message.length == 0){
                 return false;
@@ -131,7 +114,6 @@ export default {
 
         if (sessionStorage.getItem("data")){
             var data =JSON.parse(sessionStorage.getItem("data"));
-            console.log(data)
             await this.$store.commit('assignData', data)
             await this.$socket.emit('getChats', data)
 
