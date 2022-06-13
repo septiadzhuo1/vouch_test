@@ -22,8 +22,8 @@ client.connect(err => {
             console.log(data)
             participants.findOne({name:data.name, roomID:data.roomID}, (err, result)=> {
                 if (err) throw err
-                console.log(moment(new Date()).format("DD/MM/YYYY HH:mm:ss "))
-                data.joinedDate = moment(new Date()).format("DD/MM/YYYY HH:mm:ss ");
+
+                data.joinedDate = moment().toISOString();
                 data.user_session = socket.id; 
                 console.log(result, data)
                 if (result == null){
@@ -39,27 +39,31 @@ client.connect(err => {
         })
         socket.on('message', (data) => {
             clientIO.to(data.roomID).emit('message', data);
-            chats.insert({user: data.user, message: data.message, roomID:data.roomID, dateMessage:moment(new Date()).format("DD/MM/YYYY HH:mm:ss ")}, function(err, result){
+            chats.insert({name: data.name, message: data.message, roomID:data.roomID, dateMessage:moment().toISOString()}, function(err, result){
                 console.log(result)
             })
         })
         socket.on('getChats', (data)=>{
-            var query = {user:data.name, roomID:data.roomID}
             socket.join(data.roomID)
-            chats.find(query).toArray(function(err, result) {
-                if (err) throw err;
-                console.log(result)
-                clientIO.emit('getChats', result)
-            });
-            
+            var query = { roomID:data.roomID}
+
+                chats.find(query).toArray(function(err, result) {
+                    if (err) throw err;
+                    clientIO.emit('getChats', result)
+                });
         })
         socket.on('leaveRoom', (data) => {
             console.log('leave room', data)
-            participants.deleteOne({user:data.user, roomID:data.roomID}, (err, result)=> {
+            participants.deleteOne({name:data.name, roomID:data.roomID}, (err, result)=> {
                 if (err) throw err;
                 console.log("1 data deleted");
             })
-            clientIO.to(data.roomID).emit('leaveRoom', 'disconnected')
+            const status = {
+                status:'disconnected',
+                name:data.name,
+                roomID:data.roomID
+            }
+            clientIO.to(data.roomID).emit('leaveRoom', status)
         })
     });
 });

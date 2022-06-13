@@ -1,16 +1,16 @@
 <template>
   <v-app style="max-width:425px; margin:auto">
       <v-container> 
-        <div v-if="isHidden">
+        <div style="position:relative">
             <h2 style="text-align:center"  >{{roomID}}</h2>
             <div class="exit" @click="exit">Exit</div>
         </div>
         <div class="chat-history">
-            <div class="chats" v-for="(message) of messages" v-bind:key="message.message">
-                <div class="foreign-user" v-if="user != message.user" >
-                    {{message.user}}
+            <div class="chats" v-for="(message, index) of messages" v-bind:key="index">
+                <div class="foreign-user" v-if="user != message.name" >
+                    {{message.name}}
                 </div>
-                <div class="chat-messages" :class="{'from-me':message.user == user}">
+                <div class="chat-messages" :class="{'from-me':message.name == user}">
                     {{message.message}}
                 </div>
             </div>
@@ -32,7 +32,6 @@
                 color="#5DB075"
                 fab
                 @click="submitChat"
-                
                 >
                 <v-icon>mdi-arrow-up</v-icon>
                 </v-btn>
@@ -54,11 +53,17 @@ export default {
     sockets:{
         message(message){
             this.messages.push(message);
-            console.log(this.messages)
+           window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight); 
         },
         leaveRoom(message){
-            if (message == 'disconnected'){
-                 this.$router.push('/')
+            if (message.status == 'disconnected'){
+                console.log(this.$store.state.store.RoomID, message.roomID)
+                console.log(this.$store.state.store.RoomID, message.roomID)
+                if(this.$store.state.store.RoomID == message.roomID && this.$store.state.store.name == message.name){
+                    sessionStorage.removeItem("data");
+                    this.$store.commit('emptyData')
+                    this.$router.push('/')
+                }
             }
         },
         connect() {
@@ -77,10 +82,18 @@ export default {
         }
     },
     methods: {
+        scrollToElement() {
+            const el = this.$refs.scrollToMe;
+
+            if (el) {
+            // Use el.scrollIntoView() to instantly scroll to the element
+            el.scrollIntoView({behavior: 'smooth'});
+            }
+        },
         getData(){
             var data = {
                 message:this.message,
-                user:this.$store.state.store.name,
+                name:this.$store.state.store.name,
                 roomID:this.$store.state.store.RoomID,
             }
             return data
@@ -92,7 +105,7 @@ export default {
             
             var data = {
                 message:this.message,
-                user:this.$store.state.store.name,
+                name:this.$store.state.store.name,
                 roomID:this.$store.state.store.RoomID,
             }
             this.message = "";
@@ -100,7 +113,7 @@ export default {
         },
         exit(){
             var data = {
-                user:this.$store.state.store.name,
+                name:this.$store.state.store.name,
                 roomID:this.$store.state.store.RoomID,
             }
             this.message = "";
@@ -109,8 +122,8 @@ export default {
     },
     async mounted(){
 
-        if (localStorage.getItem("data")){
-            var data =JSON.parse(localStorage.getItem("data"));
+        if (sessionStorage.getItem("data")){
+            var data =JSON.parse(sessionStorage.getItem("data"));
             console.log(data)
             await this.$store.commit('assignData', data)
             await this.$socket.emit('getChats', data)
@@ -120,7 +133,7 @@ export default {
         const currentUsername = this.$store.state.store.name;
         const roomID = this.$store.state.store.RoomID;
         if (roomID == "" & currentUsername == "") {
-           // this.$router.push('/')
+            this.$router.push('/')
         }
     }
 }
@@ -196,8 +209,15 @@ export default {
     .exit{
         font-size:16px;
         color:#5DB075;
+        position: absolute;
+        top: 20px;
+        font-size: 16px;
+        font-weight: 700;
     }
     .exit:hover{
         cursor: pointer;
+    }
+    h2{
+        font-size: 36px;
     }
 </style>

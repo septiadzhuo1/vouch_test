@@ -46,13 +46,12 @@ export default {
         name:this.name,
         roomID:this.roomID,
       }
-      localStorage.setItem("data", JSON.stringify(data))
+      sessionStorage.setItem("data", JSON.stringify(data))
       if (this.name.length == 0 && this.roomID.length ==0){
         return false
       } 
       await this.$store.commit('assignData', data)
       await this.$socket.emit('joinRoom', data)
-      //this.$router.push('chatroom')
     }
   },
   sockets: {
@@ -61,12 +60,17 @@ export default {
     },
     joinRoom(message){
       if (message != "Not Allowed"){
-
         this.$router.push('chatroom')
       } else {
+        sessionStorage.removeItem("data");
         alert('this username is exist in the chatroom')
       }
     },
+  },
+  mounted(){
+    if (sessionStorage.getItem("data")){
+       this.$router.push('chatroom')
+    }
   }
 }
 </script>
