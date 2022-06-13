@@ -3,7 +3,11 @@
       <v-container> 
         <div style="position:relative">
             <h2 style="text-align:center"  >{{roomID}}</h2>
-            <div class="exit" @click="exit">Exit</div>
+            <div class="exit" @click="exit">
+                <button>
+                    Exit
+                </button>
+            </div>
         </div>
         <div class="chat-history">
             <div class="chats" v-for="(message, index) of messages" v-bind:key="index">
@@ -142,11 +146,14 @@ export default {
 <style>
     .chat-history .chat-messages{
         background:#F6F6F6;
-        padding:10px;
+        padding:15px;
         border-radius: 10px 10px 10px 0px;
         position: relative;
         max-width:250px;
         margin-left: 10px;
+        word-wrap: break-word;
+        margin-right: auto;
+        white-space: break-spaces;
     }
     .chat-history{
         margin-bottom: 90px;
@@ -168,7 +175,7 @@ export default {
         color:#ffffff;
         border-radius: 10px 10px 0px 10px !important;
         margin-left: auto !important;
-        margin-right: 10px;
+        margin-right: 10px !important;
         margin-top: 30px;
     }
 
@@ -204,15 +211,18 @@ export default {
         margin-left: 15px;
     }
     .chats {
-        margin-top: 30px;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
     }
     .exit{
         font-size:16px;
         color:#5DB075;
         position: absolute;
-        top: 20px;
-        font-size: 16px;
+        top: 10px;
         font-weight: 700;
+        user-select: none;
+        padding:10px;
     }
     .exit:hover{
         cursor: pointer;
