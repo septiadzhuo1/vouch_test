@@ -60,6 +60,7 @@ export default {
            window.scrollTo(0, document.body.scrollHeight || document.documentElement.scrollHeight); 
         },
         leaveRoom(message){
+            console.log(message)
             if (message.status == 'disconnected'){
                 console.log(this.$store.state.store.RoomID, message.roomID)
                 console.log(this.$store.state.store.RoomID, message.roomID)
@@ -74,7 +75,9 @@ export default {
             console.log('socket connected')
         },
         getChats(message){
-            this.messages = message
+            if(message[1] == this.$store.state.store.RoomID){
+                this.messages = message[0]
+            }
         }
     },
     computed:{
@@ -176,7 +179,6 @@ export default {
         border-radius: 10px 10px 0px 10px !important;
         margin-left: auto !important;
         margin-right: 10px !important;
-        margin-top: 30px;
     }
 
     .from-me::after{
@@ -211,7 +213,7 @@ export default {
         margin-left: 15px;
     }
     .chats {
-        margin-top: 10px;
+        margin-top: 35px;
         display: flex;
         flex-direction: column;
     }

@@ -19,13 +19,12 @@ client.connect(err => {
         
         socket.on('joinRoom', (data) => {
             socket.join(data.roomID)
-            console.log(data)
+            console.log(data.roomID)
             participants.findOne({name:data.name, roomID:data.roomID}, (err, result)=> {
                 if (err) throw err
 
                 data.joinedDate = moment().toISOString();
                 data.user_session = socket.id; 
-                console.log(result, data)
                 if (result == null){
                     participants.insertOne(data, (err, result)=> {
                         if (err) throw err;
@@ -40,20 +39,18 @@ client.connect(err => {
         socket.on('message', (data) => {
             clientIO.to(data.roomID).emit('message', data);
             chats.insert({name: data.name, message: data.message, roomID:data.roomID, dateMessage:moment().toISOString()}, function(err, result){
-                console.log(result)
             })
         })
         socket.on('getChats', (data)=>{
             socket.join(data.roomID)
             var query = { roomID:data.roomID}
-
                 chats.find(query).toArray(function(err, result) {
                     if (err) throw err;
-                    clientIO.emit('getChats', result)
+                    console.log(result);
+                    clientIO.emit('getChats', result, data.roomID)
                 });
         })
         socket.on('leaveRoom', (data) => {
-            console.log('leave room', data)
             participants.deleteOne({name:data.name, roomID:data.roomID}, (err, result)=> {
                 if (err) throw err;
                 console.log("1 data deleted");
@@ -67,48 +64,3 @@ client.connect(err => {
         })
     });
 });
-/*
-mongo.connect(url, (err, db) => {
-    if(err){
-        throw err;
-    }
-    var dbo = db.db("vouch_test");
-    console.log('MongoDB connected...');
-
-    clientIO.on('connection', (socket)=> {
-        var participants = dbo.collection("participants");
-        
-        socket.on('joinRoom', (data) => {
-            socket.join(data.roomID)
-            console.log(data)
-            participants.findOne({name:data.name, roomID:data.roomID}, (err, result)=> {
-                if (err) throw err
-                console.log(moment(new Date()).format("DD/MM/YYYY HH:mm:ss "))
-                data.joinedDate = moment(new Date()).format("DD/MM/YYYY HH:mm:ss ");
-                data.user_session = socket.id; 
-                console.log(result, data)
-                if (result == null){
-                    participants.insertOne(data, (err, result)=> {
-                        if (err) throw err;
-                        console.log("1 data inserted");
-                        clientIO.to(data.roomID).emit('joinRoom', 'Allowed');
-                    })
-                } else {
-                    client.to(data.roomID).emit('joinRoom', 'Not Allowed');
-                }
-            })
-        })
-        socket.on('message', (data) => {
-            console.log(data)
-            clientIO.to(data.roomID).emit('message', data)
-        })
-        socket.on('leaveRoom', (data) => {
-            console.log('leave room', data)
-            participants.deleteOne({name:data.user, roomID:data.roomID}, (err, result)=> {
-                if (err) throw err;
-                console.log("1 data deleted");
-            })
-            clientIO.to(data.roomID).emit('leaveRoom', 'disconnected')
-        })
-    });
-})*/
